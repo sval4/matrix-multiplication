@@ -2,10 +2,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <typeinfo>
-#include <algorithm>
-#include <iomanip>
-#include <cmath>
 #include <sstream>
 
 const std::string calculate(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, const int height, const int width, std::vector<int>& spaces){
@@ -31,11 +27,25 @@ void printMatrix(const std::vector<std::vector<std::string>>& answer, const std:
 	}
 }
 
+void createMatrix(std::vector<std::vector<double>>& matrix, std::ifstream& input_file, int& height, int& width){
+	input_file >> height;
+	input_file >> width;
+	double num;
+	for(int i = 0; i < height; i++){
+		matrix.push_back(std::vector<double>());
+		for(int j = 0; j < width; j++){
+			input_file >> num;
+			matrix[i].push_back(num);
+		}
+	}
+}
+
 int main(int argc, char* argv[]){
 	if(argc != 2){ //Ensures that 2 arguments are passed in
 		std::cerr << "Need to pass in appropriate number of arguments\n";
 		exit(1);
 	}
+
 	std::ifstream input_file (argv[1]);
 
 	if(!input_file.good()){
@@ -46,32 +56,18 @@ int main(int argc, char* argv[]){
 	std::vector<std::vector<double>> matrix1;
 	int height1;
 	int width1;
-	input_file >> height1;
-	input_file >> width1;
-	double num;
-	for(int i = 0; i < height1; i++){
-		matrix1.push_back(std::vector<double>());
-		for(int j = 0; j < width1; j++){
-			input_file >> num;
-			matrix1[i].push_back(num);
-		}
-	}
+	createMatrix(matrix1, input_file, height1, width1);
+	
 	std::vector<std::vector<double>> matrix2;
 	int height2;
 	int width2;
-	input_file >> height2;
-	input_file >> width2;
-	for(int i = 0; i < height2; i++){
-		matrix2.push_back(std::vector<double>());
-		for(int j = 0; j < width2; j++){
-			input_file >> num;
-			matrix2[i].push_back(num);
-		}
-	}
+	createMatrix(matrix2, input_file, height2, width2);
+
 	if(width1 != height2){
 		std::cerr << "Incorrect dimensions between matrices, multiplication cannot be done"  << "\n";
 		exit(1);
 	}
+
 	std::vector<std::vector<std::string>> answer;
 	std::vector<int> spaces(width2 - 1, 0);
 	for(int i = 0; i < height1; i++){
@@ -80,6 +76,7 @@ int main(int argc, char* argv[]){
 			answer[i].push_back(calculate(matrix1, matrix2, i, j, spaces));
 		}
 	}
+
 	printMatrix(answer, spaces);
 	
 	return 0;
