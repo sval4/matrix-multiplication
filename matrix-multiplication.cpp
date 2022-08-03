@@ -4,6 +4,8 @@
 #include <string>
 #include <typeinfo>
 #include <algorithm>
+#include <iomanip>
+#include <cmath>
 
 double calculate(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, const int height, const int width){
 	double num = 0;
@@ -17,9 +19,13 @@ void printMatrix(const std::vector<std::vector<double>>& answer){
 	for(int i = 0; i < answer.size(); i++){
 		for(int j = 0; j < answer[i].size(); j++){
 			if(answer[i].size() - 1 == j){
-				std::cout << answer[i][j] << std::endl;
+				std::cout << std::setprecision(3) << answer[i][j] << std::endl;
 			}else{
-				std::cout << answer[i][j] << " ";
+				if(round(answer[i][j]) == answer[i][j]){
+					std::cout << std::setprecision(3) << answer[i][j] << std::string(4, ' ');
+				}else{
+					std::cout << std::setprecision(3) << answer[i][j] << std::string(2, ' ');
+				}
 			}
 		}
 	}
