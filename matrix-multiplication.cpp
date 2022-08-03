@@ -4,30 +4,45 @@
 #include <string>
 #include <sstream>
 
-const std::string calculate(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, const int height, const int width, std::vector<int>& spaces){
+//calculates the value of each number in the answer matrix
+const std::string calculate(const std::vector<std::vector<double>>& matrix1, 
+	const std::vector<std::vector<double>>& matrix2, const int height, const int width, 
+	std::vector<int>& spaces){
+	
 	double num = 0;
 	std::ostringstream ss1;
+
+	//loops through all the numbers of the given row in matrix 1
+	//with all the numbers of the given column in matrix 2
+	//multiplying the the corresponding numbers and adding the rest
 	for(int i = 0; i < matrix2.size(); i++){
 		num += matrix1[height][i] * matrix2[i][width];
 	}
+
 	ss1 << num;
+	//finds which number is the longest for a given column
 	spaces[width] = std::max(spaces[width], int(ss1.str().size()));
 	return ss1.str();
 }
 
-void printMatrix(const std::vector<std::vector<std::string>>& answer, const std::vector<int>& spaces){
+void printMatrix(const std::vector<std::vector<std::string>>& answer, 
+	const std::vector<int>& spaces){
+	
 	for(int i = 0; i < answer.size(); i++){
 		for(int j = 0; j < answer[i].size(); j++){
 			if(answer[i].size() - 1 == j){
 				std::cout << answer[i][j] << std::endl;
 			}else{
-				std::cout << answer[i][j] << std::string((spaces[j] + 2) - answer[i][j].size(), ' ');
+				//gives at least two spaces between adjacent numbers and keeps each column aligned
+				std::cout << answer[i][j] << std::string(spaces[j] + 2 - answer[i][j].size(), ' ');
 			}
 		}
 	}
 }
 
-void createMatrix(std::vector<std::vector<double>>& matrix, std::ifstream& input_file, int& height, int& width){
+void createMatrix(std::vector<std::vector<double>>& matrix, std::ifstream& input_file, int& height, 
+	int& width){
+
 	input_file >> height;
 	input_file >> width;
 	double num;
@@ -63,13 +78,19 @@ int main(int argc, char* argv[]){
 	int width2;
 	createMatrix(matrix2, input_file, height2, width2);
 
+	//matrix multiplication can only be done if the width of the first matrix is equal to the 
+	//height of the second
 	if(width1 != height2){
-		std::cerr << "Incorrect dimensions between matrices, multiplication cannot be done"  << "\n";
+		std::cerr << "Incorrect dimensions between matrices, multiplication cannot be done" << "\n";
 		exit(1);
 	}
 
 	std::vector<std::vector<std::string>> answer;
-	std::vector<int> spaces(width2 - 1, 0);
+	//used to get the maximum length of each number in each column of the answer matrix
+	std::vector<int> spaces(width2, 0); 
+
+	//loops through height1 then width2 because the answer matrix will have the height of the first 
+	//matrix and the width of the second matrix
 	for(int i = 0; i < height1; i++){
 		answer.push_back(std::vector<std::string>());
 		for(int j = 0; j < width2; j++){
