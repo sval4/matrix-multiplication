@@ -6,34 +6,33 @@
 #include <algorithm>
 #include <iomanip>
 #include <cmath>
+#include <sstream>
 
-double calculate(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, const int height, const int width){
+const std::string calculate(const std::vector<std::vector<double>>& matrix1, const std::vector<std::vector<double>>& matrix2, const int height, const int width, std::vector<int>& spaces){
 	double num = 0;
+	std::ostringstream ss1;
 	for(int i = 0; i < matrix2.size(); i++){
 		num += matrix1[height][i] * matrix2[i][width];
 	}
-	return num;
+	ss1 << num;
+	spaces[width] = std::max(spaces[width], int(ss1.str().size()));
+	return ss1.str();
 }
 
-void printMatrix(const std::vector<std::vector<double>>& answer){
+void printMatrix(const std::vector<std::vector<std::string>>& answer, const std::vector<int>& spaces){
 	for(int i = 0; i < answer.size(); i++){
 		for(int j = 0; j < answer[i].size(); j++){
 			if(answer[i].size() - 1 == j){
-				std::cout << std::setprecision(3) << answer[i][j] << std::endl;
+				std::cout << answer[i][j] << std::endl;
 			}else{
-				if(round(answer[i][j]) == answer[i][j]){
-					std::cout << std::setprecision(3) << answer[i][j] << std::string(4, ' ');
-				}else{
-					std::cout << std::setprecision(3) << answer[i][j] << std::string(2, ' ');
-				}
+				std::cout << answer[i][j] << std::string((spaces[j] + 2) - answer[i][j].size(), ' ');
 			}
 		}
 	}
 }
 
-
 int main(int argc, char* argv[]){
-	if(argc != 2){ //Ensures that 1 argument is passed in
+	if(argc != 2){ //Ensures that 2 arguments are passed in
 		std::cerr << "Need to pass in appropriate number of arguments\n";
 		exit(1);
 	}
@@ -73,12 +72,15 @@ int main(int argc, char* argv[]){
 		std::cerr << "Incorrect dimensions between matrices, multiplication cannot be done"  << "\n";
 		exit(1);
 	}
-	std::vector<std::vector<double>> answer;
+	std::vector<std::vector<std::string>> answer;
+	std::vector<int> spaces(width2 - 1, 0);
 	for(int i = 0; i < height1; i++){
-		answer.push_back(std::vector<double>());
+		answer.push_back(std::vector<std::string>());
 		for(int j = 0; j < width2; j++){
-			answer[i].push_back(calculate(matrix1, matrix2, i, j));
+			answer[i].push_back(calculate(matrix1, matrix2, i, j, spaces));
 		}
 	}
-	printMatrix(answer);
+	printMatrix(answer, spaces);
+	
+	return 0;
 }
